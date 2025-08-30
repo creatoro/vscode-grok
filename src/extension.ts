@@ -7,7 +7,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('vscodeGrok.askWorkspace', async () => {
       const apiKey = vscode.workspace.getConfiguration('vscodeGrok').get('apiKey', '');
       const model = vscode.workspace.getConfiguration('vscodeGrok').get('model', 'grok-4');
-      const showPreview = vscode.workspace.getConfiguration('vscodeGrok').get('showPreview', 'workspace-only');
+      const showPreview = vscode.workspace.getConfiguration('vscodeGrok').get<string>('showPreview', 'workspace-only');
 
       const files = await vscode.workspace.findFiles('**/*.{ts,js,py,jsx,tsx}', '**/node_modules/**');
       let workspaceContent = '';
