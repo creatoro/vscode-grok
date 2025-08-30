@@ -15,15 +15,27 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.displayResponse = exports.displayResponseInOutputChannel = exports.displayResponseInTab = void 0;
+exports.displayResponseInTab = displayResponseInTab;
+exports.displayResponseInOutputChannel = displayResponseInOutputChannel;
+exports.displayResponse = displayResponse;
 const vscode = __importStar(require("vscode"));
 const const_1 = require("./const");
 const config_1 = require("./config");
@@ -37,7 +49,6 @@ async function displayResponseInTab(choices) {
     }
     vscode.window.showInformationMessage("Grok finished. Responses shown in new tabs.");
 }
-exports.displayResponseInTab = displayResponseInTab;
 function displayResponseInOutputChannel(choices) {
     const outputChannel = vscode.window.createOutputChannel(const_1.OUTPUT_CHANNEL_NAME);
     outputChannel.clear();
@@ -49,7 +60,6 @@ function displayResponseInOutputChannel(choices) {
     outputChannel.show();
     vscode.window.showInformationMessage("Grok finished. Responses shown in the Output panel.");
 }
-exports.displayResponseInOutputChannel = displayResponseInOutputChannel;
 async function displayResponse(choices) {
     const outputMethod = await (0, config_1.getOutputMethod)();
     if (outputMethod === const_1.OUTPUT_METHOD_OUTPUT_CHANNEL) {
@@ -63,5 +73,4 @@ async function displayResponse(choices) {
         throw new Error("Invalid outputMethod");
     }
 }
-exports.displayResponse = displayResponse;
 //# sourceMappingURL=display.js.map
