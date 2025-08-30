@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       // Chunking for large contexts (split into 200k char chunks to avoid API limits)
-      const chunks = [];
+      const chunks: string[] = [];
       for (let i = 0; i < workspaceContent.length; i += 200000) {
         chunks.push(workspaceContent.substring(i, i + 200000));
       }
@@ -40,8 +40,8 @@ export function activate(context: vscode.ExtensionContext) {
         try {
           const response = await callXAIAPI(prompt, model, apiKey);
           fullOutput += response.choices[0].message.content + '\n';
-        } catch (error) {
-          vscode.window.showErrorMessage(`Error in chunk: ${error.message}`);
+        } catch (error: any) {
+          vscode.window.showErrorMessage(`Error in chunk: ${(error as Error).message}`);
           return;
         }
       }
@@ -67,8 +67,8 @@ export function activate(context: vscode.ExtensionContext) {
         const response = await callXAIAPI(prompt, model, apiKey);
         const output = response.choices[0].message.content;
         displayOutput(output);
-      } catch (error) {
-        vscode.window.showErrorMessage(`Error: ${error.message}`);
+      } catch (error: any) {
+        vscode.window.showErrorMessage(`Error: ${(error as Error).message}`);
       }
     })
   );
@@ -95,8 +95,8 @@ export function activate(context: vscode.ExtensionContext) {
         const response = await callXAIAPI(prompt, model, apiKey);
         const output = response.choices[0].message.content;
         displayOutput(output);
-      } catch (error) {
-        vscode.window.showErrorMessage(`Error: ${error.message}`);
+      } catch (error: any) {
+        vscode.window.showErrorMessage(`Error: ${(error as Error).message}`);
       }
     })
   );
@@ -121,8 +121,8 @@ export function activate(context: vscode.ExtensionContext) {
         const response = await callXAIAPI(prompt, model, apiKey);
         const output = response.choices[0].message.content;
         displayOutput(output);
-      } catch (error) {
-        vscode.window.showErrorMessage(`Error: ${error.message}`);
+      } catch (error: any) {
+        vscode.window.showErrorMessage(`Error: ${(error as Error).message}`);
       }
     })
   );
@@ -152,8 +152,8 @@ export function activate(context: vscode.ExtensionContext) {
         const response = await callXAIAPI(prompt, model, apiKey);
         const output = response.choices[0].message.content;
         displayOutput(output);
-      } catch (error) {
-        vscode.window.showErrorMessage(`Error: ${error.message}`);
+      } catch (error: any) {
+        vscode.window.showErrorMessage(`Error: ${(error as Error).message}`);
       }
     })
   );
@@ -173,8 +173,8 @@ export function activate(context: vscode.ExtensionContext) {
           return [
             new vscode.InlineCompletionItem(suggestion, new vscode.Range(position, position))
           ];
-        } catch (error) {
-          vscode.window.showErrorMessage(`Error in code completion: ${error.message}`);
+        } catch (error: any) {
+          vscode.window.showErrorMessage(`Error in code completion: ${(error as Error).message}`);
           return [];
         }
       }
@@ -202,8 +202,8 @@ export function activate(context: vscode.ExtensionContext) {
               const response = await callXAIAPI(message.text, model, apiKey);
               const reply = response.choices[0].message.content;
               panel.webview.postMessage({ command: 'receiveMessage', text: reply });
-            } catch (error) {
-              panel.webview.postMessage({ command: 'receiveMessage', text: `Error: ${error.message}` });
+            } catch (error: any) {
+              panel.webview.postMessage({ command: 'receiveMessage', text: `Error: ${(error as Error).message}` });
             }
           }
         },
