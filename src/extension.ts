@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import fetch from 'node-fetch';
 
 export function activate(context: vscode.ExtensionContext) {
-  // Command: Ask Grok about Workspace
+  // Command: Ask Grok about Workspace (with chunking for large contexts)
   context.subscriptions.push(
     vscode.commands.registerCommand('vscodeGrok.askWorkspace', async () => {
       const apiKey = vscode.workspace.getConfiguration('vscodeGrok').get('apiKey', '');
@@ -17,9 +17,15 @@ export function activate(context: vscode.ExtensionContext) {
         workspaceContent += `File: ${file.fsPath}\n\`\`\`\n${document.getText()}\n\`\`\`\n`;
       }
 
+      // Chunking for large contexts (split into 200k char chunks to avoid API limits)
+      const chunks = [];
+      for (let i = 0; i < workspaceContent.length; i += 200000) {
+        chunks.push(workspaceContent.substring(i, i + 200000));
+      }
+
       if (showPreview === 'always' || showPreview === 'workspace-only') {
         const proceed = await vscode.window.showInformationMessage(
-          `Sending workspace data (${workspaceContent.length} characters). Proceed?`,
+          `Sending workspace data (${chunks.length} chunks, total ~${workspaceContent.length} chars). Proceed?`,
           'Yes', 'No'
         );
         if (proceed !== 'Yes') return;
@@ -28,14 +34,18 @@ export function activate(context: vscode.ExtensionContext) {
       const question = await vscode.window.showInputBox({ prompt: 'Ask Grok about your workspace' });
       if (!question) return;
 
-      const prompt = `Workspace content:\n${workspaceContent}\n\nQuestion: ${question}`;
-      try {
-        const response = await callXAIAPI(prompt, model, apiKey);
-        const output = response.choices[0].message.content;
-        displayOutput(output);
-      } catch (error) {
-        vscode.window.showErrorMessage(`Error: ${error.message}`);
+      let fullOutput = '';
+      for (const chunk of chunks) {
+        const prompt = `Workspace chunk:\n${chunk}\n\nQuestion: ${question}`;
+        try {
+          const response = await callXAIAPI(prompt, model, apiKey);
+          fullOutput += response.choices[0].message.content + '\n';
+        } catch (error) {
+          vscode.window.showErrorMessage(`Error in chunk: ${error.message}`);
+          return;
+        }
       }
+      displayOutput(fullOutput);
     })
   );
 
