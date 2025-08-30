@@ -9,6 +9,10 @@
   "categories": [
     "Machine Learning"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/creatoro/vscode-grok.git"
+  },
   "activationEvents": [
     "onCommand:vscodeGrok.askWorkspace",
     "onCommand:vscodeGrok.askCurrentTab",
